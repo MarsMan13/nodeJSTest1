@@ -3,7 +3,7 @@ var fs = require('fs');
 var url = require('url');
 const templatesDir = './Templates';
 
-
+//CreateServer_Part
 var app = http.createServer(function(req, res) {
     var _url = req.url;
     var queryData = url.parse(_url, true).query;
@@ -16,7 +16,10 @@ var app = http.createServer(function(req, res) {
         res.writeHead(200, {
             'Content-Type': 'text/html'
         });
-        res.end(showPage(title));
+        showPage(title,function(ret){
+            res.end(ret);
+        })
+
 
     } else {
         res.writeHead(404);
@@ -26,6 +29,7 @@ var app = http.createServer(function(req, res) {
 }).listen(8080);
 
 
+//basicTemplate_Part
 function returnBaseTemplate(title, homeURL, lis, article){
     return `
     <!DOCTYPE html>
@@ -60,7 +64,8 @@ function returnBaseTemplate(title, homeURL, lis, article){
 };
 
 
-function showPage(title) {
+//showPageIntoClient_Part
+function showPage(title, callback) {
     var homeURL = '/';
     console.log('title: ' + title);
     fs.readFile(`Templates/content_${title}.html`, 'utf-8', function(err, article) { //readFile@@@@@@@@@@@@@@@@@@@@@
@@ -84,7 +89,7 @@ function showPage(title) {
             console.log('article: ' + article);
             var perpect = returnBaseTemplate(title, homeURL ,lis, article);
             console.log('perpect: '+perpect);
-            return perpect;
+            callback(perpect);
         });
     });
 };
